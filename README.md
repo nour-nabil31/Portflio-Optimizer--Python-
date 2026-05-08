@@ -8,7 +8,7 @@ Built as part of my journey to bring quantitative rigor to FP&A and financial mo
 
 ## What It Does
 
-Most portfolio optimization tools are black boxes. This one is transparent and fully dynamic — feed it any tickers and it simulates 5,000 random weight combinations to find the best possible allocations across three dimensions:
+Most portfolio optimization tools are black boxes. This one is transparent and fully dynamic — feed it any tickers and it simulates 100,000 random weight combinations to find the best possible allocations across three dimensions:
 
 | Portfolio | Goal |
 |---|---|
@@ -20,7 +20,7 @@ Most portfolio optimization tools are black boxes. This one is transparent and f
 
 ## Features
 
-- **Monte Carlo Simulation** — 5,000 random portfolios simulated per run
+- **Monte Carlo Simulation** — 100,000 random portfolios simulated per run for high-resolution frontier mapping
 - **Efficient Frontier Plot** — Sharpe ratio heatmap with key portfolios highlighted
 - **Beta Calculation** — Each portfolio's beta computed against the S&P 500
 - **Dynamic** — Works with any number of tickers, any time period
@@ -31,7 +31,7 @@ Most portfolio optimization tools are black boxes. This one is transparent and f
 ## Example Output
 
 ### Efficient Frontier
-The scatter plot maps all 5,000 simulated portfolios. Color represents Sharpe ratio (red = low, green = high). Diamond markers highlight the three optimal portfolios.
+The scatter plot maps all 100,000 simulated portfolios. Color represents Sharpe ratio (red = low, green = high). Diamond markers highlight the three optimal portfolios.
 
 ### Summary Table
 | | Return | Volatility | Sharpe | Beta | ... |
@@ -55,49 +55,37 @@ pip install numpy pandas yfinance matplotlib
 ```python
 from portfolio_optimizer import optimize_portfolio
 
-# Any tickers, any time period
-results = optimize_portfolio(
-    tickers   = ["AAPL", "MSFT", "GOOGL", "NVDA"],
-    start     = "2020-01-01",
-    trials    = 5000,
-    plot      = True,
-    risk_free = 0.02        # annualized risk-free rate
+# Example — 15 tickers, custom start date
+optimize_portfolio(
+    ["CMI","TM","NKE","GM","SBUX","AAPL","FSLY","AVGO","NVDA","MSFT","AMZN","GOOGL","TSLA","WMT","META"],
+    start = "2000-05-04"
 )
 
-# Access results programmatically
-best_sharpe_weights = results["best_sharpe"]
-all_portfolios      = results["portfolios"]  # full 5,000-row DataFrame
+# Fewer tickers, default settings
+optimize_portfolio(["AAPL", "MSFT", "GOOGL"])
+
+# Adjust trials or turn off plot
+optimize_portfolio(["JPM", "BAC", "GS"], trials=10000, plot=False, risk_free=0.04)
 ```
 
 ### Parameters
 
 | Parameter | Default | Description |
 |---|---|---|
-| `tickers` | required | List of stock ticker strings |
-| `start` | `"2020-01-01"` | Historical data start date |
-| `trials` | `5000` | Number of Monte Carlo simulations |
-| `plot` | `True` | Show efficient frontier chart |
-| `risk_free` | `0.02` | Annualized risk-free rate for Sharpe ratio |
+| `tickers` | required | List of stock ticker strings — any number, any sector |
+| `start` | `"2020-01-01"` | Historical data start date (`"YYYY-MM-DD"`) |
+| `trials` | `100000` | Number of Monte Carlo simulations — more trials = smoother frontier |
+| `plot` | `True` | Show efficient frontier chart — set `False` for table only |
+| `risk_free` | `0.02` | Annualized risk-free rate used in Sharpe ratio calculation |
 
-### Return Value
-
-Returns a dictionary with four keys:
-
-```python
-{
-    "portfolios":  pd.DataFrame,  # all simulated portfolios (Return, Volatility, Sharpe, Beta, weights)
-    "best_return": pd.Series,     # highest return portfolio
-    "lowest_vol":  pd.Series,     # lowest volatility portfolio
-    "best_sharpe": pd.Series,     # highest Sharpe ratio portfolio
-}
-```
+> **Tip:** 100,000 trials gives a dense, smooth frontier. Drop to `10000` if you want faster results during exploration.
 
 ---
 
 ## Finance Logic
 
 **Why Monte Carlo?**
-Rather than solving the optimization mathematically (mean-variance optimization), Monte Carlo samples the weight space randomly at scale. With enough trials, it approximates the full efficient frontier without requiring convex optimization libraries.
+Rather than solving the optimization mathematically (mean-variance optimization), Monte Carlo samples the weight space randomly at scale. At 100,000 trials, the simulation produces a dense, smooth frontier that closely approximates the theoretical optimum — without requiring convex optimization libraries.
 
 **Why three portfolios?**
 There is no single "best" portfolio — it depends on the investor's objective:
