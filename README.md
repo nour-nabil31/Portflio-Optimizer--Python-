@@ -36,9 +36,9 @@ The scatter plot maps all 100,000 simulated portfolios. Color represents Sharpe 
 ### Summary Table
 | | Return | Volatility | Sharpe | Beta | ... |
 |---|---|---|---|---|---|
-| Max Return | 30.72% | 29.59% | 0.971 | 1.294 | ... |
-| Min Volatility | 17.47% | 21.43% | 0.722 | 0.990 | ... |
-| Max Sharpe | 29.80% | 26.51% | 1.049 | 1.211 | ... |
+| Max Return | 33.84% | 32.41% | 0.982 | 1.408 | ... |
+| Min Volatility | 15.66% | 20.87% | 0.654 | 0.958 | ... |
+| Max Sharpe | 30.44% | 26.39% | 1.077 | 1.195 | ... |
 
 ---
 
